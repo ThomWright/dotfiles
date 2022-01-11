@@ -1,0 +1,2 @@
+filetype indent plugin on
+autocmd FileType gitcommit exec 'au VimEnter * startinsert'
