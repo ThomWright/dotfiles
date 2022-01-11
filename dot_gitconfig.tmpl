@@ -1,6 +1,6 @@
 [user]
 	name = "Thom Wright"
-	email = "dev@thomwright.co.uk"
+	email = {{ .email | quote }}
 [pull]
 	rebase = true
 	autoStash = true
