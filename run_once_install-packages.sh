@@ -92,6 +92,34 @@ function install_terminator {
   fi
   sudo add-apt-repository -y ppa:mattrose/terminator
   sudo apt-get -qy install terminator
+
+  # if exists x-terminal-emulator; then
+  #   log "Setting default terminal emulator"
+
+  #   local terminator_bin
+  #   terminator_bin="$(whereis terminator | awk '{print $2}')"
+  #   local terminator_man
+  #   terminator_man="$(whereis terminator | awk '{print $3}')"
+
+  #   local xterm_emu_bin
+  #   xterm_emu_bin="$(whereis x-terminal-emulator | awk '{print $2}')"
+  #   local xterm_emu_man
+  #   xterm_emu_man="$(whereis x-terminal-emulator | awk '{print $3}')"
+
+  #   sudo update-alternatives \
+  #     --install \
+  #     "$xterm_emu_bin" \
+  #     x-terminal-emulator \
+  #     "$terminator_bin" \
+  #     60 \
+  #     \
+  #     --slave \
+  #     "$xterm_emu_man" \
+  #     x-terminal-emulator.1.gz \
+  #     "$terminator_man"
+  # else
+  #   log "Skipping setting default terminal emulator"
+  # fi
 }
 
 function install_shellcheck {
