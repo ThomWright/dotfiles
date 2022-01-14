@@ -19,7 +19,7 @@ function log_heading {
   local string_length=${#string}
 
   local underline=""
-  for ((i=1;i<=string_length;i++)) ; do
+  for ((i = 1; i <= string_length; i++)); do
     underline=${underline}-
   done
 
@@ -28,14 +28,14 @@ function log_heading {
 }
 
 function cmd_exists {
-  command -v $1 &> /dev/null
+  command -v "$1" &>/dev/null
 }
 
 function install_fonts {
   log_heading "Installing fonts"
 
   local fonts_dir="$HOME/.local/share/fonts"
-  if compgen -G "$fonts_dir/Fira*" > /dev/null; then
+  if compgen -G "$fonts_dir/Fira*" >/dev/null; then
     log "Fonts already exist"
     return
   fi
@@ -78,7 +78,7 @@ function install_fish {
   # Append to /etc/shells
   local fish_bin
   fish_bin=$(which fish)
-  grep -qxF "$fish_bin" /etc/shells || echo "$fish_bin" >> /etc/shells
+  grep -qxF "$fish_bin" /etc/shells || echo "$fish_bin" >>/etc/shells
 
   # Make default shell
   sudo chsh -s "$fish_bin"
@@ -109,7 +109,7 @@ export DEBIAN_FRONTEND=noninteractive
   log_heading "Installing basic utils"
   sudo apt-get update -qq
   sudo apt-get -qy install curl git unzip
-} > /dev/null
+} >/dev/null
 
 install_fonts
 install_starship
