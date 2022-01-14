@@ -136,7 +136,7 @@ export DEBIAN_FRONTEND=noninteractive
 {
   log_heading "Installing basic utils"
   sudo apt-get update -qq
-  sudo apt-get -qy install curl git unzip
+  sudo apt-get -qy install curl unzip
 } >/dev/null
 
 install_fonts
