@@ -131,6 +131,38 @@ function install_shellcheck {
   sudo apt-get -qy install shellcheck
 }
 
+function install_docker {
+  log_heading "Installing Docker"
+  if cmd_exists docker; then
+    log "Already exists"
+    return
+  fi
+
+  # Set up repository
+  sudo apt-get -qy install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+  if [ ! -f /usr/share/keyrings/docker-archive-keyring.gpg ]; then
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg |
+      sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  fi
+  if [ ! -f /etc/apt/sources.list.d/docker.list ]; then
+    echo "deb [arch=$(dpkg --print-architecture) \
+signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) stable" |
+      sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+  fi
+
+  sudo apt-get update -qq
+
+  # Install
+  sudo apt-get -qy install docker-ce docker-ce-cli containerd.io
+}
+
 export DEBIAN_FRONTEND=noninteractive
 
 {
@@ -144,3 +176,4 @@ install_starship
 install_fish
 install_terminator
 install_shellcheck
+install_docker
