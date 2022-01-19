@@ -8,6 +8,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box = "ubuntu/focal64"
 
+  config.vm.provision "file", source: "./vs-code-extensions.list", destination: "vs-code-extensions.list"
   config.vm.provision "shell", path: "./run_once_install-packages.sh", privileged: false
 
 end

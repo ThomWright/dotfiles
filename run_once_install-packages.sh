@@ -31,6 +31,16 @@ function cmd_exists {
   command -v "$1" &>/dev/null
 }
 
+function already_installed {
+  local cmd=$1
+  if cmd_exists "$cmd"; then
+    log "Already installed"
+    return 0
+  else
+    return 1
+  fi
+}
+
 function install_fonts {
   log_heading "Installing fonts"
 
@@ -58,20 +68,18 @@ function install_fonts {
 }
 
 function install_starship {
-  log_heading "Installing starship"
-  if cmd_exists starship; then
-    log "Already exists"
-    return
-  fi
+  local cmd="starship"
+  log_heading "Installing $cmd"
+  if already_installed $cmd; then return; fi
+
   sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- --yes
 }
 
 function install_fish {
-  log_heading "Installing fish"
-  if cmd_exists fish; then
-    log "Already exists"
-    return
-  fi
+  local cmd="fish"
+  log_heading "Installing $cmd"
+  if already_installed $cmd; then return; fi
+
   sudo apt-add-repository -y ppa:fish-shell/release-3
   sudo apt-get -qy install fish
 
@@ -85,11 +93,10 @@ function install_fish {
 }
 
 function install_terminator {
-  log_heading "Installing Terminator"
-  if cmd_exists terminator; then
-    log "Already exists"
-    return
-  fi
+  local cmd="terminator"
+  log_heading "Installing $cmd"
+  if already_installed $cmd; then return; fi
+
   sudo add-apt-repository -y ppa:mattrose/terminator
   sudo apt-get -qy install terminator
 
@@ -123,25 +130,20 @@ function install_terminator {
 }
 
 function install_shellcheck {
-  log_heading "Installing Shellcheck"
-  if cmd_exists shellcheck; then
-    log "Already exists"
-    return
-  fi
+  local cmd="shellcheck"
+  log_heading "Installing $cmd"
+  if already_installed $cmd; then return; fi
   sudo apt-get -qy install shellcheck
 }
 
 function install_docker {
-  log_heading "Installing Docker"
-  if cmd_exists docker; then
-    log "Already exists"
-    return
-  fi
+  local cmd="docker"
+  log_heading "Installing $cmd"
+  if already_installed $cmd; then return; fi
 
   # Set up repository
   sudo apt-get -qy install \
     ca-certificates \
-    curl \
     gnupg \
     lsb-release
 
@@ -169,20 +171,32 @@ $(lsb_release -cs) stable" |
 }
 
 function install_docker_compose {
-  log_heading "Installing Docker Compose"
-  if cmd_exists docker-compose; then
-    log "Already exists"
-    return
-  fi
+  local cmd="docker-compose"
+  log_heading "Installing $cmd"
+  if already_installed $cmd; then return; fi
 
   local version
   version=$(wget --quiet --output-document=- https://api.github.com/repos/docker/compose/releases/latest |
     grep --perl-regexp --only-matching '"tag_name": "\K.*?(?=")')
 
-  sudo curl -L "https://github.com/docker/compose/releases/download/${version}/docker-compose-$(uname -s)-$(uname -m)" \
+  log "Installing version: $version"
+
+  sudo curl -sSL "https://github.com/docker/compose/releases/download/${version}/docker-compose-$(uname -s)-$(uname -m)" \
     -o /usr/local/bin/docker-compose
 
   sudo chmod +x /usr/local/bin/docker-compose
+}
+
+function install_vs_code_insiders {
+  local cmd="code-insiders"
+  log_heading "Installing $cmd"
+  if already_installed $cmd; then return; fi
+
+  sudo snap install code-insiders --classic
+}
+
+function install_vs_code_extensions {
+  xargs -L 1 code-insiders --log error --install-extension <vs-code-extensions.list
 }
 
 export DEBIAN_FRONTEND=noninteractive
@@ -200,3 +214,5 @@ install_terminator
 install_shellcheck
 install_docker
 install_docker_compose
+install_vs_code_insiders
+install_vs_code_extensions
