@@ -161,6 +161,28 @@ $(lsb_release -cs) stable" |
 
   # Install
   sudo apt-get -qy install docker-ce docker-ce-cli containerd.io
+
+  # Set up
+  sudo groupadd docker
+  sudo usermod --append --groups docker "$USER"
+  sudo systemctl enable docker.service
+}
+
+function install_docker_compose {
+  log_heading "Installing Docker Compose"
+  if cmd_exists docker-compose; then
+    log "Already exists"
+    return
+  fi
+
+  local version
+  version=$(wget --quiet --output-document=- https://api.github.com/repos/docker/compose/releases/latest |
+    grep --perl-regexp --only-matching '"tag_name": "\K.*?(?=")')
+
+  sudo curl -L "https://github.com/docker/compose/releases/download/${version}/docker-compose-$(uname -s)-$(uname -m)" \
+    -o /usr/local/bin/docker-compose
+
+  sudo chmod +x /usr/local/bin/docker-compose
 }
 
 export DEBIAN_FRONTEND=noninteractive
@@ -177,3 +199,4 @@ install_fish
 install_terminator
 install_shellcheck
 install_docker
+install_docker_compose
